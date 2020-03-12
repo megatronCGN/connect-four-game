@@ -118,10 +118,14 @@
     $.each(adjacentCells, function(direction, cells) {
       if (cells.length < that.options.toWinCount) return;
 
-
       var $takenCells = $(cells).filter(function (i, cell) {
         return $(cell).hasClass(that.activePlayer);
       });
+
+      function markMatchingCells() {
+        $($takenCells[i]).addClass('winner-cell');
+        $($takenCells[i+1]).addClass('winner-cell');
+      }
 
       if ($takenCells.length >= 4) {
         for (var i = 0; i < $takenCells.length  ; i++) {
@@ -131,21 +135,25 @@
           switch (direction) {
             case 'leftToRight':
               if (that._getColNr($takenCells[i + 1]) - that._getColNr($takenCells[i]) === 1) {
+                markMatchingCells();
                 count++;
               }
               break;
             case 'topToBottom':
               if (that._getRowNr($takenCells[i+1]) - that._getRowNr($takenCells[i]) === 1) {
+                markMatchingCells();
                 count++;
               }
               break;
             case 'topLeftToBottomRight':
               if (that._getRowNr($takenCells[i+1]) - that._getRowNr($takenCells[i]) === 1) {
+                markMatchingCells();
                 count++;
               }
               break;
             case 'bottomLeftToTopRight':
               if (that._getRowNr($takenCells[i]) - that._getRowNr($takenCells[i+1]) === 1) {
+                markMatchingCells();
                 count++;
               }
               break;
@@ -165,6 +173,7 @@
     this._message(this.activePlayer + ' Player has won! New Game? Click here!');
     this.board.$messages.click(function () {
       $(this).off('click');
+      that.board.$cells.removeClass('winner-cell');
       that._init();
     });
   };

@@ -1,0 +1,34 @@
+body {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+#vg {
+  border: 1px solid black;
+  margin: auto;
+  display: inline-flex;
+}
+
+.vg__col {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.vg__cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  display: block;
+  font-size: 14px;
+  color: transparent;
+}
+
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: blue;
+}

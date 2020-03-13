@@ -1,38 +1,124 @@
+:root {
+  --token-size: 50px;
+  --board-padding-threshold: 10px;
+  --board-padding: calc(var(--board-padding-threshold) + var(--token-size));
+  --cell-border-width: 1px;
+  --cell-size: calc(var(--token-size) - (var(--cell-border-width)*2));
+  --cell-transition-duration: 300ms;
+}
+
 body {
   display: flex;
   flex-direction: column;
   text-align: center;
+  position: relative;
+  font-family: sans-serif;
 }
 
-#vg {
+h1 {
+  display: block;
+}
+
+.vg {
   border: 1px solid black;
   margin: auto;
+  margin-top: var(--board-padding);
   display: inline-flex;
 }
 
 .vg__col {
   padding: 0;
   border: 0;
+  position: relative;
   background-color: transparent;
 }
 
-.vg__cell {
-  width: 50px;
-  height: 50px;
-  border: 1px solid black;
-  display: block;
-  font-size: 14px;
-  color: transparent;
+.vg__col:hover:before {
+  content: '';
+  width: var(--token-size);
+  height: var(--token-size);
+  border-radius: 50%;
+  position: absolute;
+  top: calc(var(--board-padding) * -1);
+  left: 0;
 }
 
-.red {
+.red .vg__col:hover:before {
   background-color: red;
 }
 
-.blue {
+.blue .vg__col:hover:before {
   background-color: blue;
 }
 
-.winner-cell {
+.vg__cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  border: var(--cell-border-width) solid black;
+  display: block;
+  font-size: 14px;
+  color: transparent;
+  overflow: hidden;
+}
+
+.vg__cell:before {
+  content: '';
+  width: var(--token-size);
+  height: var(--token-size);
+  border-radius: 50%;
+  position: absolute;
+  z-index: -1;
+  top: -60px;
+  left: 0;
+
+  transition:
+      transform var(--cell-transition-duration) cubic-bezier(1,0,0,1.1);
+}
+
+.vg__cell.red:before {
+  background-color: red;
+}
+
+.vg__cell.blue:before {
+  background-color: blue;
+}
+
+.vg__cell:nth-child(1).red:before,
+.vg__cell:nth-child(1).blue:before {
+  --distance: calc((1 * var(--token-size)) + var(--board-padding-threshold));
+  transform: translateY(var(--distance));
+}
+
+.vg__cell:nth-child(2).red:before,
+.vg__cell:nth-child(2).blue:before {
+  --distance: calc((2 * var(--token-size)) + var(--board-padding-threshold));
+  transform: translateY(var(--distance));
+}
+
+.vg__cell:nth-child(3).red:before,
+.vg__cell:nth-child(3).blue:before {
+  --distance: calc((3 * var(--token-size)) + var(--board-padding-threshold));
+  transform: translateY(var(--distance));
+}
+
+.vg__cell:nth-child(4).red:before,
+.vg__cell:nth-child(4).blue:before {
+  --distance: calc((4 * var(--token-size)) + var(--board-padding-threshold));
+  transform: translateY(var(--distance));
+}
+
+.vg__cell:nth-child(5).red:before,
+.vg__cell:nth-child(5).blue:before {
+  --distance: calc((5 * var(--token-size)) + var(--board-padding-threshold));
+  transform: translateY(var(--distance));
+}
+
+.vg__cell:nth-child(6).red:before,
+.vg__cell:nth-child(6).blue:before {
+  --distance: calc((6 * var(--token-size)) + var(--board-padding-threshold));
+  transform: translateY(var(--distance));
+}
+
+.winner-cell:before {
   box-shadow: inset 0 0 0 3px green;
 }

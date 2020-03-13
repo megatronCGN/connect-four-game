@@ -21,6 +21,7 @@
     this._buildBoard();
     this._initEvents();
     this._message(this.player1 + ' Player begins');
+    this.$el.addClass(this.activePlayer);
   };
 
   // Baut das Spielbrett
@@ -60,8 +61,14 @@
       this._finishGame(matchingCells.winCells);
     }
     else {
-      if (this.activePlayer === this.player1) this.activePlayer = this.player2;
-      else this.activePlayer = this.player1;
+      if (this.activePlayer === this.player1) {
+        this.activePlayer = this.player2;
+      }
+      else {
+        this.activePlayer = this.player1;
+      }
+      this.$el.removeClass(this.player1).removeClass(this.player2);
+      this.$el.addClass(this.activePlayer);
       this._message(this.activePlayer + ' Players Turn');
     }
   };
@@ -175,10 +182,14 @@
   VG.prototype._finishGame = function(winningCells) {
     var that = this;
 
-    $.each(winningCells, function (i, cell) {
-      $(cell).addClass(that.winnerCellClass);
-    });
+    setTimeout(function () {
+      $.each(winningCells, function (i, cell) {
+        $(cell).addClass(that.winnerCellClass);
+      });
+    }, 300);
+//    }, parseInt(document.documentElement.style.getPropertyValue('--myVariable')));
 
+    this.$el.removeClass(this.activePlayer);
     this._offEvents();
     this._message(this.activePlayer + ' Player has won! New Game? Click here!');
     this.board.$messages.click(function (e) {

@@ -7,6 +7,7 @@
     this.player1 = 'red';
     this.player2 = 'blue';
     this.activePlayer = this.player1;
+    this.winnerCellClass = 'winner-cell';
     this._init();
   }
 
@@ -53,8 +54,10 @@
   VG.prototype._resolveTurn = function(currentCol) {
     var currentCell = this._fillLastCell(currentCol);
     var adjacentCells = this._findAdjacentCells(currentCell);
-    if (this._findMatchingCells(adjacentCells) >= 3 ) {
-      this._finishGame();
+    var matchingCells = this._findMatchingCells(adjacentCells);
+
+    if (matchingCells.winCount >= this.options.toWinCount ) {
+      this._finishGame(matchingCells.winCells);
     }
     else {
       if (this.activePlayer === this.player1) this.activePlayer = this.player2;
@@ -113,7 +116,8 @@
   // Finde Farbenreihen in den "benachbarten" Zellen
   VG.prototype._findMatchingCells = function(adjacentCells) {
     var that = this;
-    var count = 0;
+    var count = 1;
+    var winningCells = [];
 
     $.each(adjacentCells, function(direction, cells) {
       if (cells.length < that.options.toWinCount) return;
@@ -122,58 +126,66 @@
         return $(cell).hasClass(that.activePlayer);
       });
 
-      function markMatchingCells() {
-        $($takenCells[i]).addClass('winner-cell');
-        $($takenCells[i+1]).addClass('winner-cell');
-      }
-
       if ($takenCells.length >= 4) {
         for (var i = 0; i < $takenCells.length  ; i++) {
 
           if (i+1 >= $takenCells.length) return;
 
+          // Wenn die Differenz zwischen der aktuellen und der nächsten Zelle der Reihe bzw. Spalte genau 1 beträgt
+          // sind die Zellen benachbart und der winCount wird erhöht
           switch (direction) {
             case 'leftToRight':
               if (that._getColNr($takenCells[i + 1]) - that._getColNr($takenCells[i]) === 1) {
-                markMatchingCells();
+                winningCells.push($takenCells[i], $takenCells[i+1]);
                 count++;
-              }
+              } else count = 0;
               break;
             case 'topToBottom':
               if (that._getRowNr($takenCells[i+1]) - that._getRowNr($takenCells[i]) === 1) {
-                markMatchingCells();
+                winningCells.push($takenCells[i], $takenCells[i+1]);
                 count++;
-              }
+              } else count = 0;
               break;
             case 'topLeftToBottomRight':
               if (that._getRowNr($takenCells[i+1]) - that._getRowNr($takenCells[i]) === 1) {
-                markMatchingCells();
+                winningCells.push($takenCells[i], $takenCells[i+1]);
                 count++;
-              }
+              } else count = 0;
               break;
             case 'bottomLeftToTopRight':
               if (that._getRowNr($takenCells[i]) - that._getRowNr($takenCells[i+1]) === 1) {
-                markMatchingCells();
+                winningCells.push($takenCells[i], $takenCells[i+1]);
                 count++;
-              }
+              } else count = 0;
               break;
           }
         }
       }
     });
 
-    return count;
+    return {
+      winCount : count,
+      winCells : winningCells.filter(function (cell, i) { // Entfernt Duplikate aus den winCells
+        return winningCells.indexOf(cell) === i;
+      })
+    }
   };
 
   // Finalisiere das Spiel
-  VG.prototype._finishGame = function() {
+  VG.prototype._finishGame = function(winningCells) {
     var that = this;
+
+    $.each(winningCells, function (i, cell) {
+      $(cell).addClass(that.winnerCellClass);
+    });
 
     this._offEvents();
     this._message(this.activePlayer + ' Player has won! New Game? Click here!');
-    this.board.$messages.click(function () {
+    this.board.$messages.click(function (e) {
+      e.stopPropagation();
+
       $(this).off('click');
-      that.board.$cells.removeClass('winner-cell');
+      that.board.$cells.removeClass(that.winnerCellClass);
       that._init();
     });
   };
